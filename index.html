@@ -6,7 +6,6 @@
     <title>Guia Interativo de Processos de Suporte</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
     <style>
         :root {
             --primary: #1e3a5f;
@@ -708,7 +707,7 @@
             border-radius: var(--border-radius);
             transition: var(--transition);
             box-shadow: inset 0 0 10px rgba(52, 152, 219, 0.2);
-            list-style: none;
+            list-style: none; /* Remove default marker */
         }
 
         details summary::-webkit-details-marker {
@@ -852,12 +851,16 @@
             backdrop-filter: blur(5px);
             box-shadow: var(--shadow);
             min-height: 200px;
+            color: #a0c6e8;
+            transition: var(--transition);
+            margin-top: 30px;
+        }
+
+        .pop-details-card.empty {
             display: flex;
             align-items: center;
             justify-content: center;
             text-align: center;
-            color: #a0c6e8;
-            transition: var(--transition);
         }
 
         .pop-details-card h4 {
@@ -1005,7 +1008,7 @@
             padding: 20px;
             margin-top: 30px;
             min-height: 120px;
-            display: flex;
+            display: none; /* Hide by default */
             flex-direction: column;
             justify-content: center;
             align-items: flex-start;
@@ -1148,11 +1151,15 @@
             width: 100%;
             height: 100%;
             background: rgba(0, 0, 0, 0.8);
-            display: flex;
+            display: none; /* Changed to none */
             align-items: center;
             justify-content: center;
             z-index: 1000;
             transition: opacity 0.3s ease;
+        }
+        
+        .modal-backdrop.active {
+            display: flex; /* Show when active */
         }
 
         .modal-content {
@@ -1203,6 +1210,7 @@
             white-space: pre-wrap;
             color: #a0c6e8;
             box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.3);
+            min-height: 100px;
         }
 
         .button-primary {
@@ -1254,8 +1262,8 @@
             color: white;
             font-weight: 500;
             z-index: 1001;
-            transform: translateX(400px);
-            transition: transform 0.3s ease;
+            transform: translateX(calc(100% + 30px));
+            transition: transform 0.4s ease-in-out;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
         }
 
@@ -1281,6 +1289,7 @@
 
         .gallery-img {
             width: 100%;
+            height: auto;
             border-radius: 8px;
             cursor: pointer;
             transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -1291,7 +1300,7 @@
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
         }
 
-        .modal {
+        .image-modal {
             display: none;
             position: fixed;
             z-index: 1001;
@@ -1306,15 +1315,19 @@
             justify-content: center;
         }
 
+        .image-modal.active {
+            display: flex;
+        }
+
         .modal-img-content {
             margin: auto;
             display: block;
             max-width: 80%;
-            max-height: 80%;
+            max-height: 80vh;
             animation: zoomIn 0.4s ease;
         }
 
-        .close-modal {
+        .close-modal-btn {
             position: absolute;
             top: 20px;
             right: 35px;
@@ -1325,8 +1338,8 @@
             cursor: pointer;
         }
 
-        .close-modal:hover,
-        .close-modal:focus {
+        .close-modal-btn:hover,
+        .close-modal-btn:focus {
             color: #bbb;
             text-decoration: none;
         }
@@ -1344,30 +1357,30 @@
                 </a>
                 
                 <div class="search-container">
-                    <input type="text" placeholder="Buscar no guia...">
+                    <input type="text" id="searchInput" placeholder="Buscar no guia...">
                     <button><i class="fas fa-search"></i></button>
                 </div>
                 
-                <div class="nav-menu">
-                    <div class="nav-item active" data-target="responsabilidades">
+                <nav class="nav-menu">
+                    <div class="nav-item active" data-target="responsabilidades" role="button" tabindex="0">
                         <i class="fas fa-tasks"></i> Responsabilidades
                     </div>
-                    <div class="nav-item" data-target="diagnostico">
+                    <div class="nav-item" data-target="diagnostico" role="button" tabindex="0">
                         <i class="fas fa-stethoscope"></i> Diagnóstico
                     </div>
-                    <div class="nav-item" data-target="procedimentos">
+                    <div class="nav-item" data-target="procedimentos" role="button" tabindex="0">
                         <i class="fas fa-clipboard-list"></i> Procedimentos
                     </div>
-                    <div class="nav-item" data-target="uteis">
+                    <div class="nav-item" data-target="uteis" role="button" tabindex="0">
                         <i class="fas fa-bookmark"></i> Informações Úteis
                     </div>
-                    <div class="nav-item" data-target="consulta">
+                    <div class="nav-item" data-target="consulta" role="button" tabindex="0">
                         <i class="fas fa-search-location"></i> Consulta POP
                     </div>
-                    <div class="nav-item" data-target="geradores">
+                    <div class="nav-item" data-target="geradores" role="button" tabindex="0">
                         <i class="fas fa-tools"></i> Geradores
                     </div>
-                </div>
+                </nav>
             </div>
         </div>
     </header>
@@ -1386,12 +1399,11 @@
     </section>
     
     <div class="container">
-        <!-- Responsabilidades Section -->
         <section class="section active" id="responsabilidades">
             <h2 class="section-title">Responsabilidades do Setor</h2>
             <p class="section-subtitle">Esta seção descreve as principais responsabilidades e atribuições do setor de suporte, garantindo clareza sobre o escopo de atuação da equipe.</p>
             
-            <div class="card">
+            <div class="card searchable-content">
                 <div class="card-content">
                     <ul>
                         <li>Suporte a clientes fibra com lentidão ou sem conexão (Freeway e Internet Mais).</li>
@@ -1406,12 +1418,11 @@
             </div>
         </section>
 
-        <!-- Diagnóstico Section -->
         <section class="section" id="diagnostico">
             <h2 class="section-title">Diagnóstico de Problemas</h2>
             <p class="section-subtitle">Esta seção apresenta fluxos de trabalho interativos para diagnosticar e resolver os problemas mais comuns relatados pelos clientes. Use estes guias para um atendimento padronizado e eficiente.</p>
             
-            <details>
+            <details class="searchable-content">
                 <summary>Internet Lenta</summary>
                 <div class="content">
                     <p><strong>1. Boas-vindas e Coleta de Informações:</strong> Dê as boas-vindas e solicite detalhes: tipo de lentidão, se ocorre em site/aplicativo específico e se é via cabo ou Wi-Fi.</p>
@@ -1424,7 +1435,7 @@
                 </div>
             </details>
 
-            <details>
+            <details class="searchable-content">
                 <summary>Sem Conexão</summary>
                 <div class="content">
                     <p><strong>1. Análise de Cadastro:</strong> Dê as boas-vindas e verifique no IXC por bloqueios financeiros. Se houver, informe e transfira o cliente para o setor financeiro.</p>
@@ -1438,12 +1449,11 @@
             </details>
         </section>
 
-        <!-- Procedimentos Section -->
         <section class="section" id="procedimentos">
             <h2 class="section-title">Guias de Procedimentos</h2>
             <p class="section-subtitle">Esta seção contém guias passo a passo para processos padrão. Clique em um procedimento para visualizar o passo a passo completo.</p>
             
-            <details>
+            <details class="searchable-content">
                 <summary>Processo de Ativação de Cliente Novo</summary>
                 <div class="content">
                     <div class="step-list">
@@ -1530,10 +1540,15 @@
                             <li><strong>Nome do Equipamento:</strong> Em Moreninha e Aero Rancho usar padrão "VLAN + Nome + Sobrenome + Rua" (ex: 1003 ALESSANDRO NUNES RUA AMARILIS 106)</li>
                         </ul>
                     </div>
+                     <div class="image-gallery">
+                        <img src="https://via.placeholder.com/150/1e3a5f/ecf0f1?text=Passo+1" alt="Imagem do Passo 1" class="gallery-img">
+                        <img src="https://via.placeholder.com/150/3498db/ecf0f1?text=Passo+2" alt="Imagem do Passo 2" class="gallery-img">
+                        <img src="https://via.placeholder.com/150/2ecc71/ecf0f1?text=Passo+3" alt="Imagem do Passo 3" class="gallery-img">
+                     </div>
                 </div>
             </details>
 
-            <details>
+            <details class="searchable-content">
                 <summary>Processo de Troca de Equipamento</summary>
                 <div class="content">
                     <div class="step-list">
@@ -1568,7 +1583,7 @@
                 </div>
             </details>
             
-            <details>
+            <details class="searchable-content">
                 <summary>Processo de Ativação de Aplicativo</summary>
                 <div class="content">
                     <p><strong>Link para o PDF completo:</strong> <a href="https://drive.google.com/file/d/1-dE0bQUscTaHUHdzFZ0sDUjMQhKQhHII/view" target="_blank" style="color: var(--secondary);">Acessar PDF de Ativação de Aplicativos</a></p>
@@ -1578,3 +1593,457 @@
                             <ul>
                                 <li>No IXC, acesse a aba <strong>"Contrato"</strong> do cliente para verificar o plano e os produtos inclusos.</li>
                                 <li>Identifique a categoria dos aplicativos:
+                                    <ul>
+                                        <li><strong>Básicos:</strong> Skeelo, Fluid, etc.</li>
+                                        <li><strong>Premium:</strong> Max, Deezer, etc.</li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </details>
+        </section>
+
+        <section class="section" id="uteis">
+             <h2 class="section-title">Informações Úteis</h2>
+             <p class="section-subtitle">Links, senhas e informações rápidas para o dia a dia.</p>
+             <div class="cards-container">
+                 <div class="info-card searchable-content">
+                     <h4>Links Rápidos</h4>
+                     <ul>
+                         <li><a href="http://ixc.internetmais.com.br" target="_blank"><i class="fas fa-link"></i> IXC Provedor</a></li>
+                         <li><a href="http://unm2000.internetmais.com.br:8080/unc/sso/login" target="_blank"><i class="fas fa-server"></i> UNM2000</a></li>
+                         <li><a href="https://smartolt.com/login" target="_blank"><i class="fas fa-brain"></i> SmartOLT</a></li>
+                         <li><a href="#" target="_blank"><i class="fas fa-headset"></i> Sistema de Atendimento</a></li>
+                     </ul>
+                 </div>
+                 <div class="info-card searchable-content">
+                     <h4>Senhas Padrão</h4>
+                     <ul>
+                         <li>
+                             <div class="password-entry">
+                                 <strong>Wi-Fi Padrão:</strong> 
+                                 <span id="wifi-pass">imais@CLIENTE</span>
+                                 <button class="copy-button" data-copy-target="#wifi-pass" style="padding: 2px 8px; font-size: 0.8rem; margin-left: 10px;">
+                                     <i class="fas fa-copy"></i>
+                                 </button>
+                             </div>
+                         </li>
+                         <li>
+                             <div class="password-entry">
+                                 <strong>Admin Roteador:</strong> 
+                                 <span id="admin-pass">admin / admin</span>
+                                 <button class="copy-button" data-copy-target="#admin-pass" style="padding: 2px 8px; font-size: 0.8rem; margin-left: 10px;">
+                                     <i class="fas fa-copy"></i>
+                                 </button>
+                             </div>
+                         </li>
+                     </ul>
+                 </div>
+             </div>
+        </section>
+
+        <section class="section" id="consulta">
+            <h2 class="section-title">Consulta de POP</h2>
+            <p class="section-subtitle">Selecione o POP para ver os detalhes de configuração e VLANs.</p>
+            <form id="pop-form">
+                <div class="form-group">
+                    <label for="pop-select">Selecione o Ponto de Presença (POP)</label>
+                    <select id="pop-select" required>
+                        <option value="" disabled selected>Escolha um POP...</option>
+                        <option value="moreninha">Moreninha</option>
+                        <option value="aerorancho">Aero Rancho</option>
+                        <option value="centro">Centro</option>
+                        <option value="sidrolandia">Sidrolândia</option>
+                    </select>
+                </div>
+            </form>
+            
+            <div id="pop-details-card" class="pop-details-card empty searchable-content">
+                <p>Nenhum POP selecionado.</p>
+            </div>
+        </section>
+
+        <section class="section" id="geradores">
+             <h2 class="section-title">Geradores</h2>
+             <p class="section-subtitle">Ferramentas para agilizar a criação de logins e mensagens.</p>
+             
+             <div class="generator-tabs">
+                 <div class="generator-tab active" data-target="gerador-pppoe">Gerador de PPPoE</div>
+                 <div class="generator-tab" data-target="gerador-msg">Gerador de Mensagens</div>
+             </div>
+
+             <div class="generator-content active searchable-content" id="gerador-pppoe">
+                 <form id="pppoe-form">
+                     <div class="form-grid">
+                         <div class="form-group">
+                             <label for="pppoe-nome">Primeiro Nome</label>
+                             <input type="text" id="pppoe-nome" placeholder="Ex: Joao" required>
+                         </div>
+                         <div class="form-group">
+                             <label for="pppoe-sobrenome">Último Sobrenome</label>
+                             <input type="text" id="pppoe-sobrenome" placeholder="Ex: Silva" required>
+                         </div>
+                     </div>
+                     <div class="form-group">
+                        <label for="pppoe-tipo">Tipo de Cliente</label>
+                        <select id="pppoe-tipo" required>
+                            <option value="imais">Internet Mais (Residencial)</option>
+                            <option value="freeway">Freeway (Empresarial)</option>
+                        </select>
+                     </div>
+                     <button type="submit" class="button-primary">
+                         <i class="fas fa-cogs"></i> Gerar Login
+                     </button>
+                 </form>
+
+                 <div class="pppoe-result-area" id="pppoe-result-area">
+                     <p><strong>Login PPPoE:</strong> <span id="pppoe-login-result" class="pppoe-generated-text"></span></p>
+                     <p><strong>Senha Padrão:</strong> <span id="pppoe-senha-result" class="pppoe-generated-text"></span></p>
+                     <button class="copy-button" data-copy-target="#pppoe-login-result">
+                         <i class="fas fa-copy"></i> Copiar Login
+                     </button>
+                 </div>
+             </div>
+
+             <div class="generator-content searchable-content" id="gerador-msg">
+                 <form id="message-form">
+                     <div class="form-group">
+                         <label for="message-type">Tipo de Mensagem</label>
+                         <select id="message-type" required>
+                             <option value="boas_vindas">Boas-vindas e Ativação de Apps</option>
+                             <option value="visita_tecnica">Agendamento de Visita Técnica</option>
+                             <option value="sem_conexao">Procedimento "Sem Conexão"</option>
+                         </select>
+                     </div>
+                     <div class="form-group">
+                         <label for="message-info">Informação Adicional (Opcional)</label>
+                         <textarea id="message-info" rows="3" placeholder="Ex: Nome do cliente, protocolo, etc."></textarea>
+                     </div>
+                     <button type="submit" class="button-primary">
+                         <i class="fab fa-whatsapp"></i> Gerar Mensagem
+                     </button>
+                 </form>
+
+                 <div class="message-output" id="message-output">A mensagem gerada aparecerá aqui...</div>
+                 <button class="copy-button" data-copy-target="#message-output">
+                     <i class="fas fa-copy"></i> Copiar Mensagem
+                 </button>
+             </div>
+        </section>
+
+    </div>
+    
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4 class="footer-title">Navegação</h4>
+                    <ul class="footer-links">
+                        <li><a href="#" class="nav-link" data-target="responsabilidades">Responsabilidades</a></li>
+                        <li><a href="#" class="nav-link" data-target="diagnostico">Diagnóstico</a></li>
+                        <li><a href="#" class="nav-link" data-target="procedimentos">Procedimentos</a></li>
+                        <li><a href="#" class="nav-link" data-target="uteis">Informações Úteis</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4 class="footer-title">Links Externos</h4>
+                    <ul class="footer-links">
+                       <li><a href="http://ixc.internetmais.com.br" target="_blank">IXC Provedor</a></li>
+                       <li><a href="http://unm2000.internetmais.com.br:8080/unc/sso/login" target="_blank">UNM2000</a></li>
+                    </ul>
+                </div>
+                 <div class="footer-section">
+                    <h4 class="footer-title">Contato</h4>
+                    <p>Suporte Técnico N1<br>Telefone: (XX) XXXX-XXXX</p>
+                </div>
+            </div>
+            <div class="copyright">
+                &copy; 2024 Guia de Processos de Suporte. Desenvolvido para Internet Mais & Freeway.
+            </div>
+        </div>
+    </footer>
+
+    <div id="notification" class="notification"></div>
+
+    <div id="image-modal" class="image-modal">
+      <span class="close-modal-btn">&times;</span>
+      <img class="modal-img-content" id="modal-img">
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // --- ELEMENT SELECTORS ---
+        const navItems = document.querySelectorAll('.nav-item, .nav-link');
+        const sections = document.querySelectorAll('.section');
+        const breadcrumbCurrent = document.getElementById('current-section');
+        const searchInput = document.getElementById('searchInput');
+        const detailsElements = document.querySelectorAll('details');
+
+        // Generator Tabs
+        const generatorTabs = document.querySelectorAll('.generator-tab');
+        const generatorContents = document.querySelectorAll('.generator-content');
+
+        // PPPoE Generator
+        const pppoeForm = document.getElementById('pppoe-form');
+        const pppoeResultArea = document.getElementById('pppoe-result-area');
+        const pppoeLoginResult = document.getElementById('pppoe-login-result');
+        const pppoeSenhaResult = document.getElementById('pppoe-senha-result');
+
+        // Message Generator
+        const messageForm = document.getElementById('message-form');
+        const messageOutput = document.getElementById('message-output');
+
+        // POP Consultation
+        const popSelect = document.getElementById('pop-select');
+        const popDetailsCard = document.getElementById('pop-details-card');
+        
+        // Image Modal
+        const imageModal = document.getElementById('image-modal');
+        const modalImg = document.getElementById('modal-img');
+        const closeModalBtn = document.querySelector('.close-modal-btn');
+        const galleryImages = document.querySelectorAll('.gallery-img');
+
+        // Notification
+        const notification = document.getElementById('notification');
+
+        // --- DATA ---
+        const popData = {
+            moreninha: {
+                nome: "POP Moreninha",
+                vlan: "1003",
+                olt: "ZTE C320",
+                faixa_ip: "172.16.3.0/24",
+                pppoe_padrao: "cliente@imais",
+                obs: "Padrão de nomeação: VLAN + Nome + Sobrenome + Rua."
+            },
+            aerorancho: {
+                nome: "POP Aero Rancho",
+                vlan: "1004",
+                olt: "Huawei MA5800",
+                faixa_ip: "172.16.4.0/24",
+                pppoe_padrao: "cliente@imais",
+                obs: "Configuração de Wi-Fi feita após a ativação."
+            },
+            centro: {
+                nome: "POP Centro",
+                vlan: "1001",
+                olt: "FiberHome AN5516",
+                faixa_ip: "172.16.1.0/24",
+                pppoe_padrao: "cliente@freeway",
+                obs: "Atende principalmente clientes empresariais (Freeway)."
+            },
+            sidrolandia: {
+                nome: "POP Sidrolândia",
+                vlan: "2010",
+                olt: "ZTE C300",
+                faixa_ip: "172.18.10.0/24",
+                pppoe_padrao: "cliente@imais",
+                obs: "Verificar potência com atenção devido à distância."
+            }
+        };
+
+
+        // --- FUNCTIONS ---
+
+        // Function to show/hide sections
+        const showSection = (targetId) => {
+            sections.forEach(section => {
+                section.classList.toggle('active', section.id === targetId);
+            });
+            const activeNavItem = document.querySelector(`.nav-item[data-target="${targetId}"]`);
+            if (activeNavItem) {
+                 breadcrumbCurrent.textContent = activeNavItem.textContent.trim().replace(/.* /,'');
+            }
+        };
+        
+        // Function to show notifications
+        const showNotification = (message, type = 'success') => {
+            notification.textContent = message;
+            notification.className = `notification ${type} show`;
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        };
+
+        // Function to handle copy to clipboard
+        const copyToClipboard = async (elementSelector) => {
+             const element = document.querySelector(elementSelector);
+             if(!element || !element.textContent) {
+                showNotification('Nada para copiar!', 'error');
+                return;
+             }
+             const textToCopy = element.textContent.trim();
+             try {
+                await navigator.clipboard.writeText(textToCopy);
+                showNotification('Copiado para a área de transferência!', 'success');
+             } catch (err) {
+                showNotification('Falha ao copiar!', 'error');
+                console.error('Falha ao copiar: ', err);
+             }
+        };
+
+
+        // --- EVENT LISTENERS ---
+
+        // Main Navigation
+        navItems.forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                const targetId = item.getAttribute('data-target');
+                document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+                document.querySelector(`.nav-item[data-target="${targetId}"]`).classList.add('active');
+                showSection(targetId);
+            });
+        });
+        
+        // Search Functionality
+        searchInput.addEventListener('input', () => {
+            const searchTerm = searchInput.value.toLowerCase().trim();
+            document.querySelectorAll('.searchable-content').forEach(content => {
+                const contentText = content.textContent.toLowerCase();
+                content.style.display = contentText.includes(searchTerm) ? '' : 'none';
+            });
+        });
+
+        // Accordion: Close others when one is opened
+        detailsElements.forEach(details => {
+            details.addEventListener('toggle', () => {
+                if (details.open) {
+                    detailsElements.forEach(otherDetails => {
+                        if (otherDetails !== details) {
+                            otherDetails.removeAttribute('open');
+                        }
+                    });
+                }
+            });
+        });
+
+        // Generator Tabs
+        generatorTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                generatorTabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                
+                const targetId = tab.getAttribute('data-target');
+                generatorContents.forEach(content => {
+                    content.classList.toggle('active', content.id === targetId);
+                });
+            });
+        });
+
+        // PPPoE Generator Form
+        pppoeForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const nome = document.getElementById('pppoe-nome').value.trim().toLowerCase().replace(/\s/g, '');
+            const sobrenome = document.getElementById('pppoe-sobrenome').value.trim().toLowerCase().replace(/\s/g, '');
+            const tipo = document.getElementById('pppoe-tipo').value;
+            
+            if (!nome || !sobrenome) {
+                showNotification('Preencha nome e sobrenome!', 'error');
+                return;
+            }
+
+            const dominio = (tipo === 'freeway') ? '@freeway' : '@imais';
+            const login = `${nome}.${sobrenome}${dominio}`;
+            const senha = `imais@${nome}`;
+
+            pppoeLoginResult.textContent = login;
+            pppoeSenhaResult.textContent = senha;
+            pppoeResultArea.style.display = 'flex';
+        });
+
+        // Message Generator Form
+        messageForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const type = document.getElementById('message-type').value;
+            const info = document.getElementById('message-info').value.trim();
+            let message = '';
+
+            switch(type) {
+                case 'boas_vindas':
+                    message = `Olá! Seja bem-vindo(a) à Internet Mais! 😊\nSeu acesso à internet já está ativo. Para ativar seus aplicativos inclusos (Skeelo, Max, etc.), siga as instruções em nosso guia: [link do guia].\nQualquer dúvida, estamos à disposição!`;
+                    break;
+                case 'visita_tecnica':
+                    message = `Olá! Conforme solicitado, sua visita técnica foi agendada. Nosso técnico irá ao local para verificar a situação.\nProtocolo de atendimento: ${info || '[INSERIR PROTOCOLO]'}\nPor favor, confirme o recebimento desta mensagem.`;
+                    break;
+                case 'sem_conexao':
+                    message = `Olá! Identificamos que você está sem conexão. Por favor, poderia realizar o seguinte procedimento?\n1. Desligue a ONU (aparelho da fibra) da tomada.\n2. Aguarde 30 segundos.\n3. Ligue novamente.\n4. Aguarde as luzes estabilizarem (cerca de 2 minutos) e teste a conexão.\nCaso não resolva, nos avise por aqui.`;
+                    break;
+            }
+            if (type !== 'sem_conexao' && info) {
+                 message += `\n\nInformações Adicionais: ${info}`;
+            }
+
+            messageOutput.textContent = message;
+        });
+
+        // POP Consultation
+        popSelect.addEventListener('change', () => {
+            const selectedPopId = popSelect.value;
+            const data = popData[selectedPopId];
+
+            if (data) {
+                popDetailsCard.classList.remove('empty');
+                popDetailsCard.innerHTML = `
+                    <div>
+                        <h4>${data.nome} <span class="badge">Ativo</span></h4>
+                        <div class="pop-details-grid">
+                            <div class="pop-detail-item">
+                                <p>VLAN UPLINK</p>
+                                <p>${data.vlan}</p>
+                            </div>
+                            <div class="pop-detail-item">
+                                <p>OLT Principal</p>
+                                <p>${data.olt}</p>
+                            </div>
+                             <div class="pop-detail-item">
+                                <p>Faixa de IP</p>
+                                <p>${data.faixa_ip}</p>
+                            </div>
+                        </div>
+                        <div class="pop-pppoe">
+                            <strong>Padrão PPPoE:</strong> ${data.pppoe_padrao}
+                        </div>
+                        <div class="pop-obs">
+                            <strong>Observações:</strong> ${data.obs}
+                        </div>
+                    </div>
+                `;
+            } else {
+                popDetailsCard.classList.add('empty');
+                popDetailsCard.innerHTML = `<p>Selecione um POP para ver os detalhes.</p>`;
+            }
+        });
+
+        // Copy buttons Event Delegation
+        document.body.addEventListener('click', (e) => {
+            const copyButton = e.target.closest('.copy-button');
+            if (copyButton) {
+                const targetSelector = copyButton.getAttribute('data-copy-target');
+                copyToClipboard(targetSelector);
+            }
+        });
+        
+        // Image Modal Listeners
+        galleryImages.forEach(img => {
+            img.addEventListener('click', () => {
+                imageModal.classList.add('active');
+                modalImg.src = img.src;
+            });
+        });
+        
+        closeModalBtn.addEventListener('click', () => {
+            imageModal.classList.remove('active');
+        });
+
+        imageModal.addEventListener('click', (e) => {
+            if (e.target === imageModal) { // Close if clicking on the backdrop
+                imageModal.classList.remove('active');
+            }
+        });
+    });
+    </script>
+</body>
+</html>
