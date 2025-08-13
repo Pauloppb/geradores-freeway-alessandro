@@ -609,9 +609,6 @@
             // Update current year in footer
             document.getElementById('current-year').textContent = new Date().getFullYear();
             
-            // Initialize usage counters
-            initializeUsageCounters();
-            
             // Activate initial tab
             const initialTab = document.querySelector('.nav-item.active');
             if (initialTab) {
@@ -642,56 +639,6 @@
                             currentSectionElement.textContent = item.textContent.trim();
                         }
                     });
-                    
-                    // Increment usage counter
-                    incrementUsageCounter(targetId);
-                });
-            });
-
-            // Popular procedures navigation
-            const popularItems = document.querySelectorAll('.popular-item');
-            popularItems.forEach(item => {
-                item.addEventListener('click', () => {
-                    const targetSection = item.getAttribute('data-target');
-                    const procedure = item.getAttribute('data-procedure');
-                    
-                    // Navigate to section
-                    const navItem = document.querySelector(`[data-target="${targetSection}"]`);
-                    if (navItem) {
-                        // Manually trigger navigation
-                        navItems.forEach(nav => nav.classList.remove('active'));
-                        navItem.classList.add('active');
-                        
-                        sections.forEach(section => {
-                            section.classList.remove('active');
-                            if (section.id === targetSection) {
-                                section.classList.add('active');
-                                currentSectionElement.textContent = navItem.textContent.trim();
-                            }
-                        });
-                        
-                        // Increment counter for this procedure
-                        const counter = item.querySelector('.usage-counter');
-                        if (counter) {
-                            const currentCount = parseInt(counter.getAttribute('data-count')) || 0;
-                            const newCount = currentCount + 1;
-                            counter.setAttribute('data-count', newCount);
-                            counter.textContent = newCount;
-                            
-                            // Animate counter
-                            animateCounter(counter);
-                        }
-                    }
-                    
-                    // Scroll to specific procedure if needed
-                    setTimeout(() => {
-                        if (procedure && targetSection === 'procedimentos') {
-                            const procedureElement = document.querySelector(`details summary:contains("${procedure}")`);
-                            if (procedureElement) {
-                                procedureElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                            }
-                        }
-                    }, 500);
                 });
             });
             
@@ -853,39 +800,6 @@
                     <p style="margin-top: 1rem;"><strong>Observação:</strong> O login foi gerado com base no padrão do POP selecionado.</p>
                 `;
             }, 800);
-        }
-        
-        function initializeUsageCounters() {
-            // Simulate loading usage data from localStorage
-            const usageData = {
-                'responsabilidades': 89,
-                'diagnostico': 156,
-                'procedimentos': 234,
-                'uteis': 78,
-                'consulta': 167,
-                'gerador-pppoe': 256
-            };
-            
-            // You could load this from actual localStorage in a real implementation
-            // const savedData = localStorage.getItem('procedureUsage');
-            // if (savedData) usageData = JSON.parse(savedData);
-        }
-        
-        function incrementUsageCounter(sectionId) {
-            // In a real implementation, you would save this to localStorage
-            // const usageData = JSON.parse(localStorage.getItem('procedureUsage') || '{}');
-            // usageData[sectionId] = (usageData[sectionId] || 0) + 1;
-            // localStorage.setItem('procedureUsage', JSON.stringify(usageData));
-        }
-        
-        function animateCounter(counterElement) {
-            counterElement.style.transform = 'scale(1.2)';
-            counterElement.style.color = '#2ecc71';
-            
-            setTimeout(() => {
-                counterElement.style.transform = 'scale(1)';
-                counterElement.style.color = '#3498db';
-            }, 300);
         }
         
         function performSearch() {
