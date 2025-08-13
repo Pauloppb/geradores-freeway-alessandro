@@ -550,7 +550,7 @@
                 </div>
             </div>
             <div class="copyright">
-                &copy; 2024 Guia Interativo de Suporte. Todos os direitos reservados.
+                &copy; <span id="current-year"></span> Guia Interativo de Suporte. Todos os direitos reservados.
             </div>
         </div>
     </footer>
@@ -600,9 +600,14 @@
         const pppoeResultDiv = document.getElementById('pppoe-result');
         const themeToggle = document.querySelector('.theme-toggle');
         const notification = document.getElementById('notification');
+        const searchInput = document.querySelector('.search-container input');
+        const searchButton = document.querySelector('.search-container button');
 
         // Initialize page
         document.addEventListener('DOMContentLoaded', () => {
+            // Update current year in footer
+            document.getElementById('current-year').textContent = new Date().getFullYear();
+            
             // Activate initial tab
             const initialTab = document.querySelector('.nav-item.active');
             if (initialTab) {
@@ -644,6 +649,24 @@
             
             // PPPoE Generator
             generatePppoeBtn.addEventListener('click', generatePppoe);
+            
+            // Search functionality
+            searchInput.addEventListener('input', performSearch);
+            searchButton.addEventListener('click', () => {
+                const query = searchInput.value.trim();
+                if (query) {
+                    performSearch();
+                } else {
+                    showNotification('Digite algo para pesquisar', true);
+                }
+            });
+            
+            // Enter key search
+            searchInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    searchButton.click();
+                }
+            });
             
             // Theme toggle
             themeToggle.addEventListener('click', toggleTheme);
@@ -766,6 +789,67 @@
                     <p style="margin-top: 1rem;"><strong>Observação:</strong> O login foi gerado com base no padrão do POP selecionado.</p>
                 `;
             }, 800);
+        }
+        
+        function performSearch() {
+            const query = searchInput.value.toLowerCase().trim();
+            
+            if (query.length < 2) {
+                clearSearchHighlights();
+                return;
+            }
+            
+            // Clear previous highlights
+            clearSearchHighlights();
+            
+            let found = false;
+            const sections = document.querySelectorAll('.section');
+            
+            sections.forEach(section => {
+                const content = section.textContent.toLowerCase();
+                if (content.includes(query)) {
+                    found = true;
+                    
+                    // Highlight the section
+                    section.style.border = '2px solid var(--secondary)';
+                    section.style.borderRadius = 'var(--border-radius)';
+                    section.style.backgroundColor = 'rgba(52, 152, 219, 0.1)';
+                    
+                    // Navigate to the section if it's not active
+                    if (!section.classList.contains('active')) {
+                        const sectionId = section.id;
+                        const correspondingNavItem = document.querySelector(`[data-target="${sectionId}"]`);
+                        if (correspondingNavItem) {
+                            correspondingNavItem.click();
+                        }
+                    }
+                    
+                    // Scroll to section
+                    setTimeout(() => {
+                        section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }, 300);
+                }
+            });
+            
+            if (found) {
+                showNotification(`Resultados encontrados para: "${query}"`);
+                
+                // Auto-clear highlights after 5 seconds
+                setTimeout(() => {
+                    clearSearchHighlights();
+                }, 5000);
+            } else {
+                showNotification(`Nenhum resultado encontrado para: "${query}"`, true);
+            }
+        }
+        
+        function clearSearchHighlights() {
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(section => {
+                section.style.border = '';
+                section.style.borderRadius = '';
+                section.style.backgroundColor = '';
+            });
         }
         
         function copyToClipboard(text) {
@@ -934,6 +1018,8 @@
         
         .logo:hover .logo-text {
             background: linear-gradient(to right, #2ecc71, #3498db);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
         
         .nav-menu {
