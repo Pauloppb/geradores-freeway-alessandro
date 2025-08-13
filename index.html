@@ -640,11 +640,11 @@
                         if (section.id === targetId) {
                             section.classList.add('active');
                             currentSectionElement.textContent = item.textContent.trim();
-                            
-                            // Increment usage counter
-                            incrementUsageCounter(targetId);
                         }
                     });
+                    
+                    // Increment usage counter
+                    incrementUsageCounter(targetId);
                 });
             });
 
@@ -658,7 +658,17 @@
                     // Navigate to section
                     const navItem = document.querySelector(`[data-target="${targetSection}"]`);
                     if (navItem) {
-                        navItem.click();
+                        // Manually trigger navigation
+                        navItems.forEach(nav => nav.classList.remove('active'));
+                        navItem.classList.add('active');
+                        
+                        sections.forEach(section => {
+                            section.classList.remove('active');
+                            if (section.id === targetSection) {
+                                section.classList.add('active');
+                                currentSectionElement.textContent = navItem.textContent.trim();
+                            }
+                        });
                         
                         // Increment counter for this procedure
                         const counter = item.querySelector('.usage-counter');
@@ -668,7 +678,7 @@
                             counter.setAttribute('data-count', newCount);
                             counter.textContent = newCount;
                             
-                            // Save to localStorage simulation (in real app)
+                            // Animate counter
                             animateCounter(counter);
                         }
                     }
@@ -870,11 +880,11 @@
         
         function animateCounter(counterElement) {
             counterElement.style.transform = 'scale(1.2)';
-            counterElement.style.color = var(--success);
+            counterElement.style.color = '#2ecc71';
             
             setTimeout(() => {
                 counterElement.style.transform = 'scale(1)';
-                counterElement.style.color = var(--secondary);
+                counterElement.style.color = '#3498db';
             }, 300);
         }
         
